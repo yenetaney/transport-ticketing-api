@@ -30,6 +30,8 @@ ALLOWED_HOSTS = []
 
 # Application definition
 
+AUTH_USER_MODEL = 'accounts.CustomUser'
+
 INSTALLED_APPS = [
     'accounts',
     'rest_framework',
