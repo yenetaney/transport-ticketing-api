@@ -6,7 +6,7 @@ from rest_framework import viewsets
 
 # Create your views here.
 
-class TransportComponyViewSet(viewsets.ModelViewSet):
+class TransportCompanyViewSet(viewsets.ModelViewSet):
     queryset = TransportCompany.objects.all()
     serializer_class = TransportComponySerializer
     permission_classes = [IsAdminUser]
