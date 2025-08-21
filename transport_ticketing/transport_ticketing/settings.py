@@ -33,6 +33,7 @@ ALLOWED_HOSTS = []
 AUTH_USER_MODEL = 'accounts.CustomUser'
 
 INSTALLED_APPS = [
+    'booking',
     'accounts',
     'rest_framework',
     'django.contrib.admin',
