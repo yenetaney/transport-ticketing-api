@@ -1,6 +1,7 @@
 # serializers.py
 from rest_framework import serializers
 from .models import CustomUser
+from rest_framework.authtoken.models import Token
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
@@ -18,6 +19,7 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
             password=validated_data['password'],
             role=validated_data.get('role', 'passenger') 
         )
+        Token.objects.get_or_create(user = user)
         return user
     
     def validate_email(self, value):
