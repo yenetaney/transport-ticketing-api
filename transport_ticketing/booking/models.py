@@ -11,3 +11,11 @@ class TransportCompany(models.Model):
     def __str__(self):
         return f'{self.name} ({self.owner.username})'
 
+class Route(models.Model):
+    origin = models.CharField(max_length=100)
+    destination = models.CharField(max_length=100)
+    duration_estimate = models.DurationField()
+
+    def __str__(self):
+        return f'{self.origin} → {self.destination}'
+    
