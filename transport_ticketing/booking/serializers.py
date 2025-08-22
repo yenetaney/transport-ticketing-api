@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import TransportCompany, Route
+from .models import TransportCompany, Route, Trip
 
 class TransportCompanySerializer(serializers.ModelSerializer):
     class Meta:
@@ -16,3 +16,7 @@ class RouteSerializer(serializers.ModelSerializer):
         model = Route
         fields = ['id', 'origin', 'destination', 'duration_estimate']
         
+class TripSerializer(serializers.Serializer):
+    class Meta:
+        model = Trip
+        fields = ['id',  'route', 'company', 'departure_time', 'available_seats', 'price']

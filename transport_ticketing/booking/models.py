@@ -19,3 +19,14 @@ class Route(models.Model):
     def __str__(self):
         return f'{self.origin} → {self.destination}'
     
+class Trip(models.Model):
+    route = models.ForeignKey(Route, on_delete=models.CASCADE)
+    company = models.ForeignKey(TransportCompany, on_delete=models.CASCADE)
+    departure_time = models.DateTimeField()
+    available_seats = models.PositiveIntegerField()
+    price = models.DecimalField(max_digits=8, decimal_places=2)
+
+    def __str__(self):
+        return f"{self.route.origin} → {self.route.destination} at {self.departure_time}"
+
+    
