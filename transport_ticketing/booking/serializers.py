@@ -16,7 +16,7 @@ class RouteSerializer(serializers.ModelSerializer):
         model = Route
         fields = ['id', 'origin', 'destination', 'duration_estimate']
         
-class TripSerializer(serializers.Serializer):
+class TripSerializer(serializers.ModelSerializer):
     class Meta:
         model = Trip
         fields = ['id',  'route', 'company', 'departure_time', 'available_seats', 'price']
