@@ -1,7 +1,7 @@
 from rest_framework import generics
 from .models import CustomUser
-from .serializers import UserRegistrationSerializer
-from .permissions import IsAdminUserRole
+from .serializers import UserRegistrationSerializer, CompanyAdminRegistrationSerializer
+from .permissions import IsSuperAdmin
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -14,10 +14,16 @@ class UserRegistrationView(generics.CreateAPIView):
 
     def create(self,request,  *args, **kwargs):
         response = super().create(request, *args, **kwargs)
-        user = CustomUser.objects.get(id=request.data['id'])
+        user = CustomUser.objects.get(id=response.data['id'])
         token, _ = Token.objects.get_or_create(user=user)
         response.data['token'] = token.key
         return response
+
+class CompanyAdminCreateView(generics.CreateAPIView):
+    queryset = CustomUser.objects.all()
+    serializer_class = CompanyAdminRegistrationSerializer
+    permission_classes = [IsSuperAdmin]
+
     
 class LoginView(APIView):
     def post(self, request):
@@ -39,5 +45,5 @@ class LoginView(APIView):
 class UserListView(generics.ListAPIView):
     queryset = CustomUser.objects.all()
     serializer_class = UserRegistrationSerializer
-    permission_classes = [IsAdminUserRole]
+    permission_classes = [IsSuperAdmin]
 
