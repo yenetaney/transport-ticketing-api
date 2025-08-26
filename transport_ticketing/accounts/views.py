@@ -1,6 +1,6 @@
 from rest_framework import generics
 from .models import CustomUser
-from .serializers import UserRegistrationSerializer, CompanyAdminRegistrationSerializer
+from .serializers import UserRegistrationSerializer
 from .permissions import IsSuperAdmin
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -18,12 +18,6 @@ class UserRegistrationView(generics.CreateAPIView):
         token, _ = Token.objects.get_or_create(user=user)
         response.data['token'] = token.key
         return response
-
-class CompanyAdminCreateView(generics.CreateAPIView):
-    queryset = CustomUser.objects.all()
-    serializer_class = CompanyAdminRegistrationSerializer
-    permission_classes = [IsSuperAdmin]
-
     
 class LoginView(APIView):
     def post(self, request):

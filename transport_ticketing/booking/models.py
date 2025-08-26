@@ -5,7 +5,12 @@ from django.conf import settings
 
 class TransportCompany(models.Model):
     name = models.CharField(max_length=100)
-    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='companies')
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL, 
+                              on_delete=models.SET_NULL,
+                              null=True,
+                              blank=True,
+                              related_name='companies')
+    
     contact_info = models.TextField(blank=True) 
 
     def __str__(self):
