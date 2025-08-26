@@ -3,7 +3,6 @@ from .models import TransportCompany, Route, Trip
 from accounts.models import CustomUser
 
 class TransportCompanySerializer(serializers.ModelSerializer):
-    owner_email = serializers.EmailField(write_only=True, required=False)
 
     class Meta:
         model = TransportCompany

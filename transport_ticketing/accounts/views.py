@@ -1,6 +1,6 @@
 from rest_framework import generics
 from .models import CustomUser
-from .serializers import UserRegistrationSerializer
+from .serializers import UserRegistrationSerializer, UserPromotionSerializer
 from .permissions import IsSuperAdmin
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -41,3 +41,19 @@ class UserListView(generics.ListAPIView):
     serializer_class = UserRegistrationSerializer
     permission_classes = [IsSuperAdmin]
 
+class UserPromotionView(APIView):
+    permission_classes = [IsSuperAdmin]
+
+    def post(self, request):
+        print("Raw request data:", request.data)
+
+        serializer = UserPromotionSerializer(data=request.data)
+        if serializer.is_valid():
+            user = serializer.save()
+            company = user.company  # now linked after save
+            return Response({
+                "message": f"{user.username} has been promoted to company admin for {company.name}."
+            })
+        print("Serializer errors:", serializer.errors)
+        return Response(serializer.errors, status=400)
+    
