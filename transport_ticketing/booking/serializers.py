@@ -18,6 +18,9 @@ class RouteSerializer(serializers.ModelSerializer):
         fields = ['id', 'origin', 'destination', 'duration_estimate']
         
 class TripSerializer(serializers.ModelSerializer):
+    company_name = serializers.CharField(source='company.name', read_only=True)
+
     class Meta:
         model = Trip
-        fields = ['id',  'route', 'company', 'departure_time', 'available_seats', 'price']
+        fields = ['id',  'route', 'company', 'departure_time','company_name', 'available_seats', 'price']
+        read_only_fields = ['company']

@@ -28,26 +28,26 @@ class TripViewSet(viewsets.ModelViewSet):
      permission_classes = [IsAdminOrReadOnly, CanManageOwnCompanyObject]
 
      def create(self, request, *args, **kwargs):
-         user = request.user
+        user = request.user
 
-         if user.role not in ["super_admin", "company_admin"]:
-             return Response({"detail":"Only admins can create trips."},status=status.HTTP_403_FORBIDDEN)
-         
-         data = request.data.copy()
-         if user.role == "company_admin":
-             data["company"] = user.company.id
-         
-         serializer = self.get_serializer(data=data)
-         serializer.is_valid(raise_exception=True)
-         self.perform_create(serializer)
-         return Response(serializer.data, status=status.HTTP_201_CREATED)
+        if user.role not in ["super_admin", "company_admin"]:
+            return Response({"detail": "Only admins can create trips."}, status=status.HTTP_403_FORBIDDEN)
+
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        company = user.company if user.role == "company_admin" else serializer.validated_data.get("company")
+        serializer.save(company=company)
+
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
      def get_queryset(self):
         user = self.request.user
-
         if user.role == "super_admin":
             return Trip.objects.all()
         elif user.role == "company_admin":
             return Trip.objects.filter(company=user.company)
+        elif user.role == "passenger":
+            return Trip.objects.all()  
         return Trip.objects.none()
