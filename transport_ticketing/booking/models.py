@@ -1,6 +1,7 @@
 from django.db import models
 from django.conf import settings
 
+
 # Create your models here.
 
 class TransportCompany(models.Model):
@@ -25,13 +26,28 @@ class Route(models.Model):
         return f'{self.origin} → {self.destination}'
     
 class Trip(models.Model):
-    route = models.ForeignKey(Route, on_delete=models.CASCADE)
-    company = models.ForeignKey(TransportCompany, on_delete=models.CASCADE)
+    route = models.ForeignKey('booking.Route', on_delete=models.CASCADE)
+    company = models.ForeignKey('booking.TransportCompany', on_delete=models.CASCADE)
     departure_time = models.DateTimeField()
     available_seats = models.PositiveIntegerField()
     price = models.DecimalField(max_digits=8, decimal_places=2)
-
+    
     def __str__(self):
         return f"{self.route.origin} → {self.route.destination} at {self.departure_time}"
+    
+    @property
+    def remaining_seats(self):
+        booked = self.booking_set.count()
+        return self.available_seats - booked
+
+    
+class Booking(models.Model):
+    user = models.ForeignKey('accounts.CustomUser', on_delete=models.CASCADE)
+    trip = models.ForeignKey(Trip, on_delete=models.CASCADE)
+    seat_number = models.PositiveIntegerField()
+    status = models.CharField(max_length=20, default="confirmed")
+
+    class Meta:
+        unique_together = ['trip', 'seat_number']
 
     

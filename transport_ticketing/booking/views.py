@@ -1,8 +1,12 @@
 from rest_framework.response import Response
-from .models import TransportCompany, Route, Trip
-from .serializers import TransportCompanySerializer, RouteSerializer, TripSerializer
+from .models import TransportCompany, Route, Trip, Booking
+from .serializers import TransportCompanySerializer, RouteSerializer, TripSerializer, BookingSerializer
 from .permissions import IsSuperAdminOnly, IsAdminOrReadOnly, CanManageOwnCompanyObject
 from rest_framework import viewsets, status
+from rest_framework.permissions import IsAuthenticated
+from booking.filters import TripFilter
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.filters import OrderingFilter
 
 # Create your views here.
 
@@ -26,6 +30,9 @@ class TripViewSet(viewsets.ModelViewSet):
      queryset = Trip.objects.all()
      serializer_class = TripSerializer
      permission_classes = [IsAdminOrReadOnly, CanManageOwnCompanyObject]
+     filter_backends = [DjangoFilterBackend, OrderingFilter]
+     filterset_class = TripFilter
+     ordering_fields = ['departure_time', 'price']
 
      def create(self, request, *args, **kwargs):
         user = request.user
@@ -51,3 +58,21 @@ class TripViewSet(viewsets.ModelViewSet):
         elif user.role == "passenger":
             return Trip.objects.all()  
         return Trip.objects.none()
+     
+class BookingViewSet(viewsets.ModelViewSet):
+    queryset = Booking.objects.all()
+    serializer_class = BookingSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.role == "passenger":
+            return Booking.objects.filter(user=user)
+        elif user.role == "company_admin":
+            return Booking.objects.filter(trip__company=user.company)
+        elif user.role == "super_admin":
+            return Booking.objects.all()
+        return Booking.objects.none()
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user, status="confirmed")
